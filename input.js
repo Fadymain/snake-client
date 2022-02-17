@@ -1,25 +1,47 @@
-const { connect } = require("./client");
-const { setupInput } = require("./input");
 
-const setupInput = function () {
+let connection;
+
+const setupInput = function (conn) {
+  connection = conn;
   const stdin = process.stdin;
   stdin.setRawMode(true);
   stdin.setEncoding("utf8");
   stdin.resume();
   
-  stdin.on("data", handleUserInput);
+  
+  
+  
+  const handleUserInput = function (key) {
+    if (key === "w") {
+      conn.write("Move: up");
+    }
+  
+    if (key === "a") {
+      conn.write("Move: left");
+    }
+  
+    if (key === "s") {
+      conn.write("Move: down");
+    }
+  
+    if (key === "d") {
+      conn.write("Move: right");
+    }
+  
+    if (key === '\u0003') {
+      process.exit();
+    };
+  }
+
+  stdin.on("data", (data) => {
+    handleUserInput(data);
+  });
   
   return stdin;
 };
 
-const handleUserInput = function (data) {
-  if (data === '\u0003') {
-    process.exit();
-  };
-}
 
-console.log("Connecting ...");
-connect();
-setupInput();
 
-module.exports = setupInput;
+
+
+module.exports = {setupInput};
